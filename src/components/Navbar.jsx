@@ -1,52 +1,74 @@
-import { Link } from 'react-router-dom';
-import { FaShip } from 'react-icons/fa';
 import { useState } from 'react';
-import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FiMenu, FiX } from 'react-icons/fi';
 
 const Navbar = () => {
-  const [open, setOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+
+  const navLinks = [
+    { name: 'Home', path: '/' },
+    { name: 'Book', path: '/book' },
+    { name: 'Track', path: '/track' },
+  ];
 
   return (
-    <nav className="bg-gray-950 text-white px-4 py-3 shadow-md sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto flex items-center justify-between">
-        <Link to="/" className="flex items-center gap-2 text-xl font-bold">
-          <FaShip className="text-blue-400" />
-          TransKargo
-        </Link>
+    <header className="bg-gray-900 text-white px-4 py-3 shadow-md fixed w-full top-0 z-50">
+      <div className="max-w-7xl mx-auto flex justify-between items-center">
+        <Link to="/" className="text-2xl font-bold text-orange-400">TransKargo</Link>
 
-        <div className="hidden md:flex gap-6 items-center">
-          <Link to="/" className="hover:text-blue-400 transition">Home</Link>
-          <Link to="/book" className="hover:text-blue-400 transition">Book</Link>
-          <Link to="/track" className="hover:text-blue-400 transition">Track</Link>
-          <Link to="/login" className="hover:text-blue-400 transition">Login</Link>
-        </div>
+        {/* Desktop */}
+        <nav className="hidden md:flex space-x-6 items-center">
+          {navLinks.map((link) => (
+            <Link
+              key={link.name}
+              to={link.path}
+              className="hover:text-orange-400 transition"
+            >
+              {link.name}
+            </Link>
+          ))}
+          <button className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700">
+            Sign In
+          </button>
+        </nav>
 
-        {/* Mobile Menu Toggle */}
+        {/* Mobile */}
         <div className="md:hidden">
-          <button onClick={() => setOpen(!open)} className="text-white focus:outline-none">
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" strokeWidth="2"
-              viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round"
-                d={open ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'} />
-            </svg>
+          <button onClick={() => setIsOpen(!isOpen)}>
+            {isOpen ? <FiX size={24} /> : <FiMenu size={24} />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Dropdown Menu */}
-      {open && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="md:hidden flex flex-col gap-3 px-4 mt-2"
-        >
-          <Link to="/" onClick={() => setOpen(false)}>Home</Link>
-          <Link to="/book" onClick={() => setOpen(false)}>Book</Link>
-          <Link to="/track" onClick={() => setOpen(false)}>Track</Link>
-          <Link to="/login" onClick={() => setOpen(false)}>Login</Link>
-        </motion.div>
-      )}
-    </nav>
+      {/* Mobile Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ height: 0 }}
+            animate={{ height: 'auto' }}
+            exit={{ height: 0 }}
+            className="md:hidden overflow-hidden bg-gray-800 mt-2 rounded"
+          >
+            <div className="flex flex-col space-y-3 p-4">
+              {navLinks.map((link) => (
+                <Link
+                  key={link.name}
+                  to={link.path}
+                  className="hover:text-orange-400 transition"
+                  onClick={() => setIsOpen(false)}
+                >
+                  {link.name}
+                </Link>
+              ))}
+              <button className="bg-blue-600 px-4 py-2 rounded hover:bg-blue-700 mt-2">
+                Sign In
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </header>
   );
 };
 
